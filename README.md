@@ -1,16 +1,89 @@
-# React + Vite
+Formulario React + Node + ExcelJS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto corresponde a la **Tarea 3** del curso, donde se implementa un formulario web con **React + Vite + Bootstrap**, conectado a un backend desarrollado con **Node.js + Express + ExcelJS**.
 
-Currently, two official plugins are available:
+El sistema permite capturar datos desde un formulario, enviarlos al servidor y **almacenarlos en un archivo Excel (.xlsx)**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Tecnologías utilizadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend:** React + Vite + Bootstrap 5  
+- **Backend:** Node.js + Express + ExcelJS  
+- **Despliegue:**  
+  - Frontend en **GitHub Pages**  
+  - Backend en **Render**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📦 Estructura del proyecto
+
+tarea3-form/
+├── public/
+├── src/
+│ ├── App.jsx
+│ ├── main.jsx
+│ └── App.css
+├── package.json
+├── vite.config.js
+├── .env.local
+└── README.md
+
+---
+
+## ⚙️ Configuración local
+
+1. Clonar el repositorio:
+
+   ```bash
+   git clone https://github.com/KizunaG/tarea3-form.git
+   cd tarea3-form
+   
+Instalar dependencias:
+npm install
+
+Crear el archivo .env.local con la URL del backend:
+VITE_API_URL=http://localhost:3000
+
+(O la URL del backend en línea, por ejemplo:
+VITE_API_URL=https://tarea3-api.onrender.com)
+
+Ejecutar el entorno de desarrollo:
+npm run dev
+
+
+🧠 Funcionalidad principal
+El formulario permite ingresar:
+
+Nombre y Apellido
+
+Deporte favorito
+
+Género
+
+Departamento de residencia
+
+Confirmación de mayoría de edad
+
+Modelos de coches propios
+
+Al presionar Guardar cambios, los datos se envían al backend mediante fetch() en formato JSON.
+
+El backend guarda cada registro en un archivo Excel con encabezados:
+
+Fecha | Nombre | Apellido | Deporte | Género | Departamento | Mayoría de edad | Autos
+El botón “Descargar Excel” permite descargar el archivo actualizado.
+
+🌐 Despliegue en línea
+🔸 Frontend en GitHub Pages
+La app fue publicada automáticamente en:
+https://kizunag.github.io/tarea3-form/
+
+🔸 Backend en GitHub 
+El código del backend fue publicado en:
+https://github.com/KizunaG/tarea3-api.git
+
+🔸 Backend en Render
+API desplegada en:
+ https://tarea3-api.onrender.com
+
