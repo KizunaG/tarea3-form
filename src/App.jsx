@@ -1,23 +1,29 @@
 import { useState } from 'react'
 
-const API_URL = import.meta.env.VITE_API_URL // URL del backend (Render)
+const API_URL = import.meta.env.VITE_API_URL || '' // pon tu API cuando la tengas
 
 export default function App() {
+  const [enviando, setEnviando] = useState(false)
   const [form, setForm] = useState({
-    firstName: '', lastName: '',
-    sport: '', gender: '', state: '',
-    age21: false, cars: []
+    nombre: '',
+    apellido: '',
+    deporte: '',
+    genero: '',
+    departamento: '',
+    mayoria: false,
+    autos: []
   })
-  const cars = ['Ford','Chrysler','Toyota','Nissan']
-  const sports = ['Basquet','Futbol','Tennis','Voley']
-  const states = ['Jutiapa','Jalapa','Santa Rosa','Escuintla','Otro']
+
+  const deportes = ['Baloncesto', 'Fútbol', 'Tenis', 'Voleibol']
+  const departamentos = ['Jutiapa', 'Jalapa', 'Santa Rosa', 'Escuintla', 'Otro']
+  const autos = ['Ford', 'Chrysler', 'Toyota', 'Nissan']
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target
-    if (name === 'cars') {
+    if (name === 'autos') {
       setForm(f => ({
         ...f,
-        cars: checked ? [...f.cars, value] : f.cars.filter(c => c !== value)
+        autos: checked ? [...f.autos, value] : f.autos.filter(a => a !== value)
       }))
     } else if (type === 'checkbox') {
       setForm(f => ({ ...f, [name]: checked }))
@@ -28,84 +34,201 @@ export default function App() {
 
   const onSubmit = async (e) => {
     e.preventDefault()
-    const res = await fetch(`${API_URL}/submit`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(form)
-    })
-    if(!res.ok){ alert('Error guardando'); return }
-    alert('Guardado en Excel ✅')
+    if (!API_URL) {
+      alert('Configura VITE_API_URL para enviar al backend.')
+      return
+    }
+    try {
+      setEnviando(true)
+      const res = await fetch(`${API_URL}/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: form.nombre,
+          lastName: form.apellido,
+          sport: form.deporte,
+          gender: form.genero,
+          state: form.departamento,
+          age21: form.mayoria,
+          cars: form.autos
+        })
+      })
+      if (!res.ok) throw new Error('falló el guardado')
+      alert('✅ Guardado en Excel')
+      setForm({
+        nombre: '',
+        apellido: '',
+        deporte: '',
+        genero: '',
+        departamento: '',
+        mayoria: false,
+        autos: []
+      })
+    } catch (err) {
+      console.error(err)
+      alert('❌ No se pudo guardar.')
+    } finally {
+      setEnviando(false)
+    }
   }
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="card shadow-sm" style={{maxWidth:420, width:'100%'}}>
-        <div className="card-body">
-          <h3 className="text-center mb-2">Actualizar información</h3>
-          <p className="text-muted text-center">Utilice el formulario para editar su información.</p>
-          <form onSubmit={onSubmit} className="d-grid gap-3">
-            <div>
-              <label className="form-label">Nombre de pila:</label>
-              <input className="form-control" name="firstName"
-                     value={form.firstName} onChange={onChange} placeholder="Introduce tu nombre" required/>
-            </div>
-            <div>
-              <label className="form-label">Apellido:</label>
-              <input className="form-control" name="lastName"
-                     value={form.lastName} onChange={onChange} placeholder="Introduce tu apellido" required/>
-            </div>
+    <div className="bg-soft min-vh-100 d-flex align-items-center">
+      <div className="container py-4">
+        <div className="row justify-content-center">
+          <div className="col-12 col-md-10 col-lg-6">
+            <div className="card shadow-lg border-0 rounded-4">
+              <div className="card-body p-4 p-md-5">
+                <h2 className="text-center mb-2 fw-bold text-primary">
+                  Actualizar información
+                </h2>
+                <p className="text-center text-muted mb-4">
+                  Utilice el formulario para editar su información.
+                </p>
 
-            <div>
-              <label className="form-label">Deporte favorito:</label>
-              <select className="form-select" name="sport" value={form.sport} onChange={onChange} required>
-                <option value="">Seleccione un deporte</option>
-                {sports.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
+                <form onSubmit={onSubmit} className="d-grid gap-3">
 
-            <div>
-              <label className="form-label d-block">Género:</label>
-              {['Masculino','Femenino','No estoy seguro'].map(g => (
-                <div className="form-check form-check-inline" key={g}>
-                  <input className="form-check-input" type="radio" name="gender" id={`g-${g}`}
-                         value={g} checked={form.gender===g} onChange={onChange} required/>
-                  <label className="form-check-label" htmlFor={`g-${g}`}>{g}</label>
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <label className="form-label">Residente del departamento:</label>
-              <select className="form-select" name="state" value={form.state} onChange={onChange} required>
-                <option value="">Seleccione un lugar</option>
-                {states.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-
-            <div className="form-check">
-              <input className="form-check-input" type="checkbox" name="age21" id="age21"
-                     checked={form.age21} onChange={onChange}/>
-              <label className="form-check-label" htmlFor="age21">21 años o más</label>
-            </div>
-
-            <div>
-              <label className="form-label d-block">Modelos de coches propios:</label>
-              <div className="d-flex flex-wrap gap-3">
-                {cars.map(c => (
-                  <div className="form-check" key={c}>
-                    <input className="form-check-input" type="checkbox" id={`c-${c}`}
-                           name="cars" value={c} checked={form.cars.includes(c)} onChange={onChange}/>
-                    <label className="form-check-label" htmlFor={`c-${c}`}>{c}</label>
+                  <div>
+                    <label className="form-label fw-semibold">Nombre de pila:</label>
+                    <input
+                      className="form-control"
+                      name="nombre"
+                      placeholder="Introduce tu nombre"
+                      value={form.nombre}
+                      onChange={onChange}
+                      required
+                    />
                   </div>
-                ))}
+
+                  <div>
+                    <label className="form-label fw-semibold">Apellido:</label>
+                    <input
+                      className="form-control"
+                      name="apellido"
+                      placeholder="Introduce tu apellido"
+                      value={form.apellido}
+                      onChange={onChange}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label fw-semibold">Deporte favorito:</label>
+                    <select
+                      className="form-select"
+                      name="deporte"
+                      value={form.deporte}
+                      onChange={onChange}
+                      required
+                    >
+                      <option value="">Seleccione un deporte</option>
+                      {deportes.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="form-label fw-semibold d-block">Género:</label>
+                    {[
+                      { k: 'male', t: 'Masculino' },
+                      { k: 'female', t: 'Femenino' },
+                      { k: 'not sure', t: 'No estoy seguro' }
+                    ].map(g => (
+                      <div className="form-check form-check-inline" key={g.k}>
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="genero"
+                          id={`g-${g.k}`}
+                          value={g.k}
+                          checked={form.genero === g.k}
+                          onChange={onChange}
+                          required
+                        />
+                        <label className="form-check-label" htmlFor={`g-${g.k}`}>
+                          {g.t}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="form-label fw-semibold">Residente del departamento:</label>
+                    <select
+                      className="form-select"
+                      name="departamento"
+                      value={form.departamento}
+                      onChange={onChange}
+                      required
+                    >
+                      <option value="">Seleccione un lugar</option>
+                      {departamentos.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="mayoria"
+                      name="mayoria"
+                      checked={form.mayoria}
+                      onChange={onChange}
+                    />
+                    <label className="form-check-label" htmlFor="mayoria">
+                      21 años o más
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="form-label fw-semibold d-block">Modelos de coches propios:</label>
+                    <div className="d-flex flex-wrap gap-3">
+                      {autos.map(a => (
+                        <div className="form-check" key={a}>
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id={`a-${a}`}
+                            name="autos"
+                            value={a}
+                            checked={form.autos.includes(a)}
+                            onChange={onChange}
+                          />
+                          <label className="form-check-label" htmlFor={`a-${a}`}>{a}</label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="d-grid gap-2 mt-2">
+                    <button className="btn btn-primary btn-lg" disabled={enviando}>
+                      {enviando ? 'Guardando…' : 'Guardar cambios'}
+                    </button>
+
+                    {/* Si tienes API con /excel, este botón descarga el archivo */}
+                    <a
+                      className="btn btn-outline-primary btn-lg"
+                      href={API_URL ? `${API_URL}/excel` : '#'}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => { if (!API_URL) e.preventDefault() }}
+                    >
+                      Descargar Excel
+                    </a>
+                  </div>
+
+                </form>
               </div>
             </div>
 
-            <button className="btn btn-success">Guardar cambios</button>
-            <a className="btn btn-outline-success" href={`${API_URL}/excel`} target="_blank" rel="noreferrer">
-              Descargar Excel
-            </a>
-          </form>
+            {/* Pie de tarjeta */}
+            <p className="text-center text-muted mt-3 mb-0 small">
+              Hecho con React + Bootstrap • Tema morado personalizado
+            </p>
+          </div>
         </div>
       </div>
     </div>
