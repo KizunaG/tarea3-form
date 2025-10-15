@@ -72,6 +72,29 @@ export default function App() {
     }
   }
 
+  // 🟣👇 AÑADE ESTA FUNCIÓN AQUÍ (debajo del onSubmit)
+  async function descargarExcel() {
+    if (!API_URL) return;
+    try {
+      const res = await fetch(`${API_URL}/excel`, { cache: 'no-store' });
+      if (!res.ok) return alert('No hay Excel todavía');
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'registros.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert('❌ Error al descargar el archivo.');
+    }
+  }
+
+
   return (
     <div className="bg-soft min-vh-100 d-flex align-items-center">
       <div className="container py-4">
@@ -209,15 +232,14 @@ export default function App() {
                     </button>
 
                     {/* Si tienes API con /excel, este botón descarga el archivo */}
-                    <a
-                      className="btn btn-outline-primary btn-lg"
-                      href={API_URL ? `${API_URL}/excel` : '#'}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => { if (!API_URL) e.preventDefault() }}
-                    >
-                      Descargar Excel
-                    </a>
+                    <button
+  type="button"
+  className="btn btn-outline-primary btn-lg"
+  onClick={descargarExcel}
+>
+  Descargar Excel
+</button>
+
                   </div>
 
                 </form>
