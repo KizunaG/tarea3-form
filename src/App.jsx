@@ -9,7 +9,7 @@ export default function App() {
     age21: false, cars: []
   })
   const cars = ['Ford','Chrysler','Toyota','Nissan']
-  const sports = ['basketball','soccer','tennis','volleyball']
+  const sports = ['Basquet','Futbol','Tennis','Voley']
   const states = ['Jutiapa','Jalapa','Santa Rosa','Escuintla','Otro']
 
   const onChange = (e) => {
@@ -65,7 +65,7 @@ export default function App() {
 
             <div>
               <label className="form-label d-block">Género:</label>
-              {['male','female','not sure'].map(g => (
+              {['Masculino','Femenino','No estoy seguro'].map(g => (
                 <div className="form-check form-check-inline" key={g}>
                   <input className="form-check-input" type="radio" name="gender" id={`g-${g}`}
                          value={g} checked={form.gender===g} onChange={onChange} required/>
