@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// ⚠️ Cambia '/tarea3-form/' si tu repo tiene otro nombre
 export default defineConfig({
   plugins: [react()],
+  // 👇 MUY IMPORTANTE: debe coincidir EXACTO con el nombre del repo
   base: '/tarea3-form/'
 })
